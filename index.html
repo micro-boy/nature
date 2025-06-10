@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌿 Nature Prompt Generator - Adobe Stock Inspired 2025</title>
+    <title>🌿 Nature Prompt Generator - Adobe Stock Inspired</title>
     <style>
         * {
             margin: 0;
@@ -98,7 +98,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
         }
 
         .btn:hover {
@@ -754,7 +754,13 @@
     </div>
 
     <script>
+        // 🎯 Track which generation mode was last used
+        let lastGenerationMode = 'midjourney'; // default to midjourney
+
         function generatePrompt() {
+            lastGenerationMode = 'standard'; // 📝 Track that standard mode was used
+            updateButtonStates(); // 🎨 Update visual feedback
+            
             const landscape = document.getElementById('landscape').value;
             const timeOfDay = document.getElementById('timeOfDay').value;
             const weather = document.getElementById('weather').value;
@@ -778,6 +784,9 @@
         }
 
         function generateMidjourney() {
+            lastGenerationMode = 'midjourney'; // 📝 Track that midjourney mode was used
+            updateButtonStates(); // 🎨 Update visual feedback
+            
             const landscape = document.getElementById('landscape').value;
             const timeOfDay = document.getElementById('timeOfDay').value;
             const weather = document.getElementById('weather').value;
@@ -817,6 +826,7 @@
             document.getElementById('mjResult').scrollIntoView({ behavior: 'smooth' });
         }
 
+        // 🧠 Smart Random Function - follows last used mode
         function randomizeAll() {
             // Only randomize nature content selects, keep Midjourney settings unchanged
             const natureSelects = [
@@ -831,7 +841,33 @@
                 const randomIndex = Math.floor(Math.random() * options.length);
                 select.selectedIndex = randomIndex;
             });
-            generateMidjourney(); // Auto generate Midjourney on random
+            
+            // 🎯 SMART: Generate using the last selected mode
+            if (lastGenerationMode === 'standard') {
+                generatePrompt();    // ✅ Standard if last was standard
+            } else {
+                generateMidjourney(); // ✅ Midjourney if last was midjourney
+            }
+        }
+
+        // 🎨 Visual Feedback Function
+        function updateButtonStates() {
+            const standardBtn = document.querySelector('button[onclick="generatePrompt()"]');
+            const midjourneyBtn = document.querySelector('button[onclick="generateMidjourney()"]');
+            const randomBtn = document.querySelector('button[onclick="randomizeAll()"]');
+            
+            // Reset button opacity (make them dimmed)
+            standardBtn.style.opacity = '0.6';
+            midjourneyBtn.style.opacity = '0.6';
+            
+            // Highlight active button and update random button text
+            if (lastGenerationMode === 'standard') {
+                standardBtn.style.opacity = '1';
+                randomBtn.innerHTML = '🎲 Random Standard Combo';
+            } else {
+                midjourneyBtn.style.opacity = '1';
+                randomBtn.innerHTML = '🎲 Random Midjourney Combo';
+            }
         }
 
         function resetAll() {
@@ -841,6 +877,18 @@
             });
             document.getElementById('result').style.display = 'none';
             document.getElementById('mjResult').style.display = 'none';
+            
+            // Reset button states
+            const standardBtn = document.querySelector('button[onclick="generatePrompt()"]');
+            const midjourneyBtn = document.querySelector('button[onclick="generateMidjourney()"]');
+            const randomBtn = document.querySelector('button[onclick="randomizeAll()"]');
+            
+            standardBtn.style.opacity = '1';
+            midjourneyBtn.style.opacity = '1';
+            randomBtn.innerHTML = '🎲 Random Selection';
+            
+            // Reset to default mode
+            lastGenerationMode = 'midjourney';
         }
 
         function copyPrompt() {
@@ -911,7 +959,7 @@
                     document.getElementById('landscape').value = 'crystal-clear alpine lake';
                     document.getElementById('timeOfDay').value = 'blue hour twilight';
                     document.getElementById('weather').value = 'perfect clear weather';
-                    document.getElementById('subject').value = 'perfect mirror reflections';
+                    document.getElementById('subject').value = 'flowing water features';
                     document.getElementById('effect').value = 'perfect mirror reflections';
                     // Midjourney V7 optimal settings for lake
                     document.getElementById('aspectRatio').value = '3:2';
@@ -955,16 +1003,17 @@
                     break;
             }
             generateMidjourney(); // Auto-generate Midjourney format for presets
+            updateButtonStates(); // 🎨 Update button states after preset
         }
 
         function trackDonation() {
-            // Optional: Track donation clicks for analytics
-            console.log('Donation button clicked - Thank you for supporting!');
+            console.log('Nature tool donation clicked - Thank you for supporting nature AI development!');
         }
 
         // Auto-generate on page load with default mountain preset
         window.onload = function() {
             setPreset('mountain');
+            updateButtonStates(); // 🎨 Initialize button states
         }
     </script>
 </body>
